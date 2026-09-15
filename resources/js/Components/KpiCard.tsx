@@ -56,13 +56,13 @@ export default function KpiCard({
     const scheme = colorMap[color] || colorMap.indigo;
 
     return (
-        <div className={`group relative rounded-2xl border p-4 lg:p-5 transition-all duration-300 bg-slate-900/70 backdrop-blur-xl border-slate-800 ${scheme.glow} hover:shadow-xl hover:shadow-indigo-500/5`}>
-            <div className="flex items-start justify-between">
-                <div>
-                    <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{title}</p>
-                    <h3 className="mt-2 text-2xl font-bold tracking-tight text-white font-mono">{value}</h3>
+        <div className={`group relative rounded-2xl border p-5 sm:p-6 transition-all duration-300 bg-slate-900/80 backdrop-blur-xl border-slate-800 ${scheme.glow} hover:shadow-xl hover:shadow-indigo-500/5`}>
+            <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">{title}</p>
+                    <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-mono truncate">{value}</h3>
                 </div>
-                <div className={`p-3 rounded-xl ${scheme.iconBg}`}>
+                <div className={`p-3 rounded-xl shrink-0 ${scheme.iconBg}`}>
                     <Icon className="w-5 h-5" />
                 </div>
             </div>
@@ -71,15 +71,15 @@ export default function KpiCard({
                 <div className="mt-4 flex items-center gap-2 pt-3 border-t border-slate-800/80 text-xs">
                     {badgeText && (
                         <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-full font-semibold ${badgePositive
-                                    ? 'bg-emerald-500/20 text-emerald-300'
-                                    : 'bg-slate-800 text-slate-300'
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full font-semibold shrink-0 ${badgePositive
+                                ? 'bg-emerald-500/20 text-emerald-300'
+                                : 'bg-slate-800 text-slate-300'
                                 }`}
                         >
                             {badgeText}
                         </span>
                     )}
-                    {subtitle && <span className="text-slate-400 truncate">{subtitle}</span>}
+                    {subtitle && <span className="text-slate-400 leading-relaxed truncate">{subtitle}</span>}
                 </div>
             )}
         </div>

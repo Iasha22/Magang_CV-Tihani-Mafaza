@@ -119,7 +119,7 @@ export default function CashFlowReport({ reportData, filters }: CashFlowReportPr
             </div>
 
             {/* Summary KPIs */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
                     <span className="text-xs text-slate-400 uppercase tracking-wider block">Kas Masuk Cair</span>
                     <span className="text-2xl font-bold font-mono text-emerald-400 mt-1 block">
@@ -258,11 +258,10 @@ export default function CashFlowReport({ reportData, filters }: CashFlowReportPr
                                     </td>
                                     <td className="py-3 text-center">
                                         <span
-                                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                                                row.is_cair
+                                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${row.is_cair
                                                     ? 'bg-emerald-500/15 text-emerald-300'
                                                     : 'bg-amber-500/15 text-amber-300'
-                                            }`}
+                                                }`}
                                         >
                                             {row.is_cair ? 'Cair (BJB)' : 'Piutang'}
                                         </span>

@@ -48,7 +48,7 @@ class ReconciliationController extends Controller
                 'disbursement_date' => $validated['disbursement_date'],
                 'amount' => $validated['actual_amount'],
                 'bank_name' => 'BJB (CV Tihani Mafaza)',
-                'reference_number' => 'RECON-' . $order->siplah_order_id,
+                'reference_number' => 'RECON-'.$order->siplah_order_id,
                 'status' => 'cair',
                 'notes' => $validated['notes'],
             ]

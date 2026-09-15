@@ -1,15 +1,18 @@
 <?php
 
-require __DIR__ . '/../../vendor/autoload.php';
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
-$spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+require __DIR__.'/../../vendor/autoload.php';
+
+$spreadsheet = new Spreadsheet;
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Belanja Modal');
 
 $headers = [
-    'No', 'Tgl Pesan', 'Tgl Pencairan', 'Uraian', 'Bruto', 
-    'Belanja Modal', 'Harga Jual', 'Laba Kotor', 'PPN', 
-    'PPH 22', 'VA', 'Admin', 'Sekolah', 'CV'
+    'No', 'Tgl Pesan', 'Tgl Pencairan', 'Uraian', 'Bruto',
+    'Belanja Modal', 'Harga Jual', 'Laba Kotor', 'PPN',
+    'PPH 22', 'VA', 'Admin', 'Sekolah', 'CV',
 ];
 $sheet->fromArray($headers, null, 'A1');
 
@@ -27,12 +30,12 @@ foreach (range('A', 'N') as $col) {
     $sheet->getColumnDimension($col)->setAutoSize(true);
 }
 
-if (!is_dir(__DIR__ . '/../../sample_data')) {
-    mkdir(__DIR__ . '/../../sample_data', 0777, true);
+if (! is_dir(__DIR__.'/../../sample_data')) {
+    mkdir(__DIR__.'/../../sample_data', 0777, true);
 }
 
-$writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-$targetPath = __DIR__ . '/../../sample_data/template_siplah_cv_tihani.xlsx';
+$writer = new Xlsx($spreadsheet);
+$targetPath = __DIR__.'/../../sample_data/template_siplah_cv_tihani.xlsx';
 $writer->save($targetPath);
 
 echo "Template created at {$targetPath}\n";

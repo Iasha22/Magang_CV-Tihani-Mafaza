@@ -129,7 +129,7 @@ export default function TaxReport({ reportData, filters }: TaxReportProps) {
             </div>
 
             {/* Tax KPI Cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
                     <span className="text-xs text-slate-400 uppercase tracking-wider block">Dasar Pengenaan Pajak (DPP)</span>
                     <span className="text-2xl font-bold font-mono text-white mt-1 block">

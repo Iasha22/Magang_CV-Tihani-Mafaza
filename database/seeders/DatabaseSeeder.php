@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $taxService = new TaxCalculationService();
+        $taxService = new TaxCalculationService;
 
         // 1. Pengguna Sistem (Users)
         User::create([
@@ -211,7 +211,7 @@ class DatabaseSeeder extends Seeder
         foreach ($sampleOrders as $idx => $so) {
             $customer = $customerModels[$so['customer_idx']];
             $orderDate = Carbon::parse($so['order_date']);
-            $orderIdStr = 'SIP-2026' . $orderDate->format('m') . '-' . str_pad((string)($idx + 101), 4, '0', STR_PAD_LEFT);
+            $orderIdStr = 'SIP-2026'.$orderDate->format('m').'-'.str_pad((string) ($idx + 101), 4, '0', STR_PAD_LEFT);
 
             $totBruto = 0;
             $totCost = 0;
@@ -267,7 +267,7 @@ class DatabaseSeeder extends Seeder
             Transaction::create([
                 'order_id' => $order->id,
                 'transaction_date' => $orderDate,
-                'invoice_number' => 'INV/' . $orderIdStr,
+                'invoice_number' => 'INV/'.$orderIdStr,
                 'bruto' => $totBruto,
                 'tax_pph22' => $pph22,
                 'tax_ppn' => $ppn,
@@ -278,13 +278,13 @@ class DatabaseSeeder extends Seeder
             ]);
 
             // Disbursement record if paid
-            if (!empty($so['disbursement_date'])) {
+            if (! empty($so['disbursement_date'])) {
                 PaymentDisbursement::create([
                     'order_id' => $order->id,
                     'disbursement_date' => Carbon::parse($so['disbursement_date']),
                     'amount' => $netDisbursement,
                     'bank_name' => 'BJB (CV Tihani Mafaza)',
-                    'reference_number' => 'CAIR-' . $orderIdStr,
+                    'reference_number' => 'CAIR-'.$orderIdStr,
                     'status' => 'cair',
                     'notes' => 'Pencairan dana BOS langsung ke rekening perusahaan',
                 ]);

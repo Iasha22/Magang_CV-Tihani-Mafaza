@@ -141,7 +141,7 @@ export default function SalesReport({ reportData, customers, filters }: SalesRep
             </div>
 
             {/* Summary KPIs */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5">
                     <span className="text-xs text-slate-400 uppercase tracking-wider block">Total Pesanan</span>
                     <span className="text-2xl font-bold font-mono text-white mt-1 block">
@@ -250,11 +250,10 @@ export default function SalesReport({ reportData, customers, filters }: SalesRep
                                     </td>
                                     <td className="py-3 text-center">
                                         <span
-                                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${
-                                                order.status === 'selesai'
+                                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold ${order.status === 'selesai'
                                                     ? 'bg-emerald-500/15 text-emerald-300'
                                                     : 'bg-amber-500/15 text-amber-300'
-                                            }`}
+                                                }`}
                                         >
                                             {order.status === 'selesai' ? 'Cair' : 'Pending'}
                                         </span>

@@ -12,7 +12,6 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
@@ -35,7 +34,7 @@ class SiplahParserService
 
         foreach ($rows as $index => $row) {
             $isDuplicate = in_array($row['siplah_order_id'], $existingOrderIds);
-            $isValid = !empty($row['school_name']) && $row['bruto'] > 0;
+            $isValid = ! empty($row['school_name']) && $row['bruto'] > 0;
 
             $previewData[] = [
                 'row_number' => $index + 1,
@@ -58,7 +57,7 @@ class SiplahParserService
                 'is_valid' => $isValid,
                 'validation_message' => $isDuplicate
                     ? 'Nomor pesanan sudah terdaftar di sistem (akan diperbarui)'
-                    : (!$isValid ? 'Data tidak lengkap (Sekolah atau Nilai Bruto kosong)' : 'Siap diimpor'),
+                    : (! $isValid ? 'Data tidak lengkap (Sekolah atau Nilai Bruto kosong)' : 'Siap diimpor'),
             ];
         }
 
@@ -91,7 +90,8 @@ class SiplahParserService
                 try {
                     if (empty($data['school_name']) || $data['bruto'] <= 0) {
                         $errorCount++;
-                        $errors[] = "Baris " . ($index + 1) . ": Nama sekolah atau bruto tidak valid.";
+                        $errors[] = 'Baris '.($index + 1).': Nama sekolah atau bruto tidak valid.';
+
                         continue;
                     }
 
@@ -122,7 +122,7 @@ class SiplahParserService
                         [
                             'order_date' => $data['order_date'],
                             'customer_id' => $customer->id,
-                            'status' => !empty($data['disbursement_date']) ? 'selesai' : 'menunggu_pencairan',
+                            'status' => ! empty($data['disbursement_date']) ? 'selesai' : 'menunggu_pencairan',
                             'total_bruto' => $data['bruto'],
                             'total_cost' => $data['belanja_modal'],
                             'gross_profit' => $data['gross_profit'],
@@ -155,7 +155,7 @@ class SiplahParserService
                         ['order_id' => $order->id],
                         [
                             'transaction_date' => $data['order_date'],
-                            'invoice_number' => 'INV-' . $order->siplah_order_id,
+                            'invoice_number' => 'INV-'.$order->siplah_order_id,
                             'bruto' => $data['bruto'],
                             'tax_pph22' => $data['pph22'],
                             'tax_ppn' => $data['ppn'],
@@ -167,14 +167,14 @@ class SiplahParserService
                     );
 
                     // 6. Payment Disbursement
-                    if (!empty($data['disbursement_date'])) {
+                    if (! empty($data['disbursement_date'])) {
                         PaymentDisbursement::updateOrCreate(
                             ['order_id' => $order->id],
                             [
                                 'disbursement_date' => $data['disbursement_date'],
                                 'amount' => $data['net_disbursement'],
                                 'bank_name' => 'BJB (Rekening CV Tihani Mafaza)',
-                                'reference_number' => 'CAIR-' . $order->siplah_order_id,
+                                'reference_number' => 'CAIR-'.$order->siplah_order_id,
                                 'status' => 'cair',
                                 'notes' => 'Pencairan dana BOS via SIPLah',
                             ]
@@ -185,7 +185,7 @@ class SiplahParserService
                     $successCount++;
                 } catch (Exception $e) {
                     $errorCount++;
-                    $errors[] = "Baris " . ($index + 1) . ": " . $e->getMessage();
+                    $errors[] = 'Baris '.($index + 1).': '.$e->getMessage();
                 }
             }
 
@@ -213,9 +213,10 @@ class SiplahParserService
             ];
         } catch (Exception $e) {
             DB::rollBack();
+
             return [
                 'success' => false,
-                'message' => 'Gagal mengimpor file: ' . $e->getMessage(),
+                'message' => 'Gagal mengimpor file: '.$e->getMessage(),
             ];
         }
     }
@@ -257,7 +258,7 @@ class SiplahParserService
                 $headerIndex = $idx;
                 foreach ($row as $colIdx => $colName) {
                     if ($colName !== null) {
-                        $headerMap[strtolower(trim((string)$colName))] = $colIdx;
+                        $headerMap[strtolower(trim((string) $colName))] = $colIdx;
                     }
                 }
                 break;
@@ -309,17 +310,17 @@ class SiplahParserService
             $disbursementDate = $this->parseDate($disbursementDateVal);
 
             // Clean or generate Order ID
-            $cleanOrderId = !empty($siplahId) && strlen(trim($siplahId)) > 2 && !is_numeric($siplahId)
+            $cleanOrderId = ! empty($siplahId) && strlen(trim($siplahId)) > 2 && ! is_numeric($siplahId)
                 ? trim($siplahId)
-                : 'SIP-' . ($orderDate ? date('Ym', strtotime($orderDate)) : '202609') . '-' . str_pad((string)($i + 1), 4, '0', STR_PAD_LEFT);
+                : 'SIP-'.($orderDate ? date('Ym', strtotime($orderDate)) : '202609').'-'.str_pad((string) ($i + 1), 4, '0', STR_PAD_LEFT);
 
             $parsedRows[] = [
                 'siplah_order_id' => $cleanOrderId,
                 'order_date' => $orderDate ?? Carbon::now()->toDateString(),
                 'disbursement_date' => $disbursementDate,
-                'school_name' => !empty($school) ? trim($school) : 'SD/SMP Mitra Bandung',
-                'item_description' => !empty($description) ? trim($description) : 'Pengadaan Barang SIPLah',
-                'category' => !empty($category) ? trim($category) : $this->detectCategory($description),
+                'school_name' => ! empty($school) ? trim($school) : 'SD/SMP Mitra Bandung',
+                'item_description' => ! empty($description) ? trim($description) : 'Pengadaan Barang SIPLah',
+                'category' => ! empty($category) ? trim($category) : $this->detectCategory($description),
                 'bruto' => $bruto,
                 'belanja_modal' => $belanjaModal,
                 'pph22' => $pph22,
@@ -339,9 +340,10 @@ class SiplahParserService
     {
         foreach ($possibleNames as $name) {
             if (isset($headerMap[$name]) && isset($row[$headerMap[$name]])) {
-                return (string)$row[$headerMap[$name]];
+                return (string) $row[$headerMap[$name]];
             }
         }
+
         return null;
     }
 
@@ -358,13 +360,13 @@ class SiplahParserService
         if (preg_match('/\.\d{3}/', $cleaned) && str_contains($cleaned, ',')) {
             $cleaned = str_replace('.', '', $cleaned);
             $cleaned = str_replace(',', '.', $cleaned);
-        } elseif (preg_match('/\.\d{3}/', $cleaned) && !str_contains($cleaned, ',')) {
+        } elseif (preg_match('/\.\d{3}/', $cleaned) && ! str_contains($cleaned, ',')) {
             $cleaned = str_replace('.', '', $cleaned);
         } elseif (str_contains($cleaned, ',')) {
             $cleaned = str_replace(',', '', $cleaned);
         }
 
-        return (float)filter_var($cleaned, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) ?: 0.0;
+        return (float) filter_var($cleaned, FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION) ?: 0.0;
     }
 
     protected function parseDate(?string $val): ?string
@@ -375,8 +377,8 @@ class SiplahParserService
 
         try {
             // Check Excel serial number
-            if (is_numeric($val) && (float)$val > 30000) {
-                return Carbon::createFromTimestamp(((float)$val - 25569) * 86400)->toDateString();
+            if (is_numeric($val) && (float) $val > 30000) {
+                return Carbon::createFromTimestamp(((float) $val - 25569) * 86400)->toDateString();
             }
 
             return Carbon::parse(trim($val))->toDateString();
@@ -412,9 +414,15 @@ class SiplahParserService
         }
 
         $cat = strtolower(trim($category));
-        if (str_contains($cat, 'buku')) return 'Buku';
-        if (str_contains($cat, 'elektronik') || str_contains($cat, 'komputer')) return 'Elektronik';
-        if (str_contains($cat, 'furniture') || str_contains($cat, 'mebel')) return 'Furniture';
+        if (str_contains($cat, 'buku')) {
+            return 'Buku';
+        }
+        if (str_contains($cat, 'elektronik') || str_contains($cat, 'komputer')) {
+            return 'Elektronik';
+        }
+        if (str_contains($cat, 'furniture') || str_contains($cat, 'mebel')) {
+            return 'Furniture';
+        }
 
         return 'ATK';
     }

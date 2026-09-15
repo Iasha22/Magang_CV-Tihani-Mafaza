@@ -12,7 +12,7 @@ class TaxCalculationTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->taxService = new TaxCalculationService();
+        $this->taxService = new TaxCalculationService;
     }
 
     public function test_pph22_is_zero_when_below_threshold(): void

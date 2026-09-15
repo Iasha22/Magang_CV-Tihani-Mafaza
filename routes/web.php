@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReconciliationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SiplahImportController;
@@ -37,6 +38,18 @@ Route::prefix('orders')->name('orders.')->group(function () {
 
 // Master Data Sekolah (Pelanggan)
 Route::resource('customers', CustomerController::class)->except(['create', 'edit', 'show']);
+
+// Database & Manajemen Produk (Master Data, Harga, Stok, Foto, Audit Trail)
+Route::prefix('products')->name('products.')->group(function () {
+    Route::get('/', [ProductController::class, 'index'])->name('index');
+    Route::post('/', [ProductController::class, 'store'])->name('store');
+    Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+    Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+    Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+    Route::post('/{product}/stock', [ProductController::class, 'storeMutation'])->name('stock.store');
+    Route::post('/{product}/images', [ProductController::class, 'uploadImages'])->name('images.upload');
+    Route::delete('/images/{image}', [ProductController::class, 'deleteImage'])->name('images.destroy');
+});
 
 // 5 Modul Laporan Akuntansi & Perpajakan
 Route::prefix('reports')->name('reports.')->group(function () {

@@ -17,8 +17,8 @@ class CustomerController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('npsn', 'like', "%{$search}%")
-                  ->orWhere('contact_person', 'like', "%{$search}%");
+                    ->orWhere('npsn', 'like', "%{$search}%")
+                    ->orWhere('contact_person', 'like', "%{$search}%");
             });
         }
 
@@ -65,6 +65,7 @@ class CustomerController extends Controller
     public function destroy(Customer $customer)
     {
         $customer->delete();
+
         return back()->with('success', 'Data sekolah berhasil dihapus.');
     }
 }

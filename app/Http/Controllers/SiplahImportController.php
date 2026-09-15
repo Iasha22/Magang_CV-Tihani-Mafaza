@@ -37,11 +37,12 @@ class SiplahImportController extends Controller
         ]);
 
         $file = $request->file('file');
-        $tempPath = $file->storeAs('temp_uploads', 'preview_' . uniqid() . '.' . $file->getClientOriginalExtension());
-        $fullPath = storage_path('app/' . $tempPath);
+        $tempPath = $file->storeAs('temp_uploads', 'preview_'.uniqid().'.'.$file->getClientOriginalExtension());
+        $fullPath = storage_path('app/'.$tempPath);
 
         try {
             $previewResult = $this->parserService->preview($fullPath);
+
             return response()->json([
                 'success' => true,
                 'temp_file' => $tempPath,
@@ -50,7 +51,7 @@ class SiplahImportController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal membaca file: ' . $e->getMessage(),
+                'message' => 'Gagal membaca file: '.$e->getMessage(),
             ], 422);
         }
     }
@@ -64,15 +65,15 @@ class SiplahImportController extends Controller
 
         if ($request->hasFile('file')) {
             $file = $request->file('file');
-            $tempPath = $file->storeAs('temp_uploads', 'import_' . uniqid() . '.' . $file->getClientOriginalExtension());
-            $fullPath = storage_path('app/' . $tempPath);
+            $tempPath = $file->storeAs('temp_uploads', 'import_'.uniqid().'.'.$file->getClientOriginalExtension());
+            $fullPath = storage_path('app/'.$tempPath);
         } elseif ($request->filled('temp_file')) {
-            $fullPath = storage_path('app/' . $request->input('temp_file'));
+            $fullPath = storage_path('app/'.$request->input('temp_file'));
         } else {
             return back()->with('error', 'Tidak ada file yang dipilih untuk diimpor.');
         }
 
-        if (!file_exists($fullPath)) {
+        if (! file_exists($fullPath)) {
             return back()->with('error', 'File tidak ditemukan di server.');
         }
 
@@ -84,7 +85,7 @@ class SiplahImportController extends Controller
         if ($result['success']) {
             return redirect()->route('dashboard')->with(
                 'success',
-                "Berhasil mengimpor {$result['success_count']} transaksi SIPLah ke pembukuan! Total Bruto: Rp " . number_format($result['total_bruto'], 0, ',', '.')
+                "Berhasil mengimpor {$result['success_count']} transaksi SIPLah ke pembukuan! Total Bruto: Rp ".number_format($result['total_bruto'], 0, ',', '.')
             );
         }
 
@@ -96,16 +97,16 @@ class SiplahImportController extends Controller
      */
     public function downloadTemplate(): BinaryFileResponse
     {
-        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet;
 
         // Sheet 1: Belanja Modal (Format Riil CV Tihani Mafaza)
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Belanja Modal');
 
         $headers = [
-            'No', 'Tgl Pesan', 'Tgl Pencairan', 'Uraian', 'Bruto', 
-            'Belanja Modal', 'Harga Jual', 'Laba Kotor', 'PPN', 
-            'PPH 22', 'VA', 'Admin', 'Sekolah', 'CV'
+            'No', 'Tgl Pesan', 'Tgl Pencairan', 'Uraian', 'Bruto',
+            'Belanja Modal', 'Harga Jual', 'Laba Kotor', 'PPN',
+            'PPH 22', 'VA', 'Admin', 'Sekolah', 'CV',
         ];
         $sheet->fromArray($headers, null, 'A1');
 

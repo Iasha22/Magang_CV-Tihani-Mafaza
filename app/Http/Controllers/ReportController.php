@@ -75,7 +75,7 @@ class ReportController extends Controller
         };
 
         $filePath = $this->reportService->exportExcel($type, $data);
-        $filename = "Laporan_{$type}_CV_Tihani_Mafaza_" . date('Ymd_His') . ".xlsx";
+        $filename = "Laporan_{$type}_CV_Tihani_Mafaza_".date('Ymd_His').'.xlsx';
 
         return response()->download($filePath, $filename)->deleteFileAfterSend(true);
     }
@@ -95,7 +95,7 @@ class ReportController extends Controller
         $pdf = Pdf::loadView('reports.pdf', [
             'type' => $type,
             'data' => $data,
-            'title' => 'Laporan ' . ucwords(str_replace('_', ' ', $type)),
+            'title' => 'Laporan '.ucwords(str_replace('_', ' ', $type)),
             'date' => date('d/m/Y H:i'),
         ])->setPaper('a4', 'landscape');
 

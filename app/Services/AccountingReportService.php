@@ -2,12 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\PaymentDisbursement;
 use App\Models\Transaction;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -25,19 +22,19 @@ class AccountingReportService
     {
         $query = Order::with(['customer', 'items', 'transaction']);
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $query->whereDate('order_date', '>=', $filters['start_date']);
         }
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $query->whereDate('order_date', '<=', $filters['end_date']);
         }
-        if (!empty($filters['customer_id'])) {
+        if (! empty($filters['customer_id'])) {
             $query->where('customer_id', $filters['customer_id']);
         }
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
-        if (!empty($filters['category'])) {
+        if (! empty($filters['category'])) {
             $query->whereHas('items', function (Builder $q) use ($filters) {
                 $q->where('category', $filters['category']);
             });
@@ -45,8 +42,8 @@ class AccountingReportService
 
         $orders = $query->orderBy('order_date', 'desc')->get();
 
-        $totalRevenue = (float)$orders->sum('total_bruto');
-        $totalCost = (float)$orders->sum('total_cost');
+        $totalRevenue = (float) $orders->sum('total_bruto');
+        $totalCost = (float) $orders->sum('total_cost');
         $totalOrders = $orders->count();
         $avgOrderValue = $totalOrders > 0 ? round($totalRevenue / $totalOrders, 2) : 0;
 
@@ -70,26 +67,30 @@ class AccountingReportService
         $salesData = $this->getSalesReport($filters);
         $orders = $salesData['orders'];
 
-        $totalBruto = (float)$orders->sum('total_bruto');
-        $totalCost = (float)$orders->sum('total_cost');
-        $totalGrossProfit = (float)$orders->sum('gross_profit');
+        $totalBruto = (float) $orders->sum('total_bruto');
+        $totalCost = (float) $orders->sum('total_cost');
+        $totalGrossProfit = (float) $orders->sum('gross_profit');
         $avgMarginPct = $totalBruto > 0 ? round(($totalGrossProfit / $totalBruto) * 100, 2) : 0;
 
         // Group by product category
         $categoryBreakdown = [];
         $itemsQuery = OrderItem::with('order');
-        if (!empty($filters['start_date']) || !empty($filters['end_date'])) {
+        if (! empty($filters['start_date']) || ! empty($filters['end_date'])) {
             $itemsQuery->whereHas('order', function ($q) use ($filters) {
-                if (!empty($filters['start_date'])) $q->whereDate('order_date', '>=', $filters['start_date']);
-                if (!empty($filters['end_date'])) $q->whereDate('order_date', '<=', $filters['end_date']);
+                if (! empty($filters['start_date'])) {
+                    $q->whereDate('order_date', '>=', $filters['start_date']);
+                }
+                if (! empty($filters['end_date'])) {
+                    $q->whereDate('order_date', '<=', $filters['end_date']);
+                }
             });
         }
 
         $items = $itemsQuery->get();
         foreach ($items->groupBy('category') as $category => $group) {
-            $catBruto = (float)$group->sum('subtotal_bruto');
-            $catCost = (float)$group->sum('subtotal_cost');
-            $catProfit = (float)$group->sum('gross_profit');
+            $catBruto = (float) $group->sum('subtotal_bruto');
+            $catCost = (float) $group->sum('subtotal_cost');
+            $catProfit = (float) $group->sum('gross_profit');
             $catMargin = $catBruto > 0 ? round(($catProfit / $catBruto) * 100, 2) : 0;
 
             $categoryBreakdown[] = [
@@ -122,10 +123,10 @@ class AccountingReportService
     {
         $ordersQuery = Order::with(['customer', 'transaction', 'disbursement']);
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $ordersQuery->whereDate('order_date', '>=', $filters['start_date']);
         }
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $ordersQuery->whereDate('order_date', '<=', $filters['end_date']);
         }
 
@@ -145,14 +146,14 @@ class AccountingReportService
             $tx = $order->transaction;
             $disb = $order->disbursement;
 
-            $bruto = (float)$order->total_bruto;
-            $modal = (float)$order->total_cost;
-            $pph = $tx ? (float)$tx->tax_pph22 : 0;
-            $ppn = $tx ? (float)$tx->tax_ppn : 0;
-            $admin = $tx ? (float)$tx->admin_fee : 0;
-            $va = $tx ? (float)$tx->va_fee : 0;
-            $netExpected = $tx ? (float)$tx->net_disbursement : ($bruto - ($pph + $ppn + $admin + $va));
-            $actualDisbursed = $disb ? (float)$disb->amount : 0;
+            $bruto = (float) $order->total_bruto;
+            $modal = (float) $order->total_cost;
+            $pph = $tx ? (float) $tx->tax_pph22 : 0;
+            $ppn = $tx ? (float) $tx->tax_ppn : 0;
+            $admin = $tx ? (float) $tx->admin_fee : 0;
+            $va = $tx ? (float) $tx->va_fee : 0;
+            $netExpected = $tx ? (float) $tx->net_disbursement : ($bruto - ($pph + $ppn + $admin + $va));
+            $actualDisbursed = $disb ? (float) $disb->amount : 0;
 
             if ($disb && $disb->status === 'cair') {
                 $totalDisbursed += $actualDisbursed;
@@ -207,18 +208,18 @@ class AccountingReportService
     {
         $txQuery = Transaction::with(['order.customer']);
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $txQuery->whereDate('transaction_date', '>=', $filters['start_date']);
         }
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $txQuery->whereDate('transaction_date', '<=', $filters['end_date']);
         }
 
         $transactions = $txQuery->orderBy('transaction_date', 'desc')->get();
 
-        $totalDpp = (float)$transactions->sum('bruto');
-        $totalPph22 = (float)$transactions->sum('tax_pph22');
-        $totalPpn = (float)$transactions->sum('tax_ppn');
+        $totalDpp = (float) $transactions->sum('bruto');
+        $totalPph22 = (float) $transactions->sum('tax_pph22');
+        $totalPpn = (float) $transactions->sum('tax_ppn');
         $totalTaxes = $totalPph22 + $totalPpn;
 
         // Group by month
@@ -228,10 +229,10 @@ class AccountingReportService
                 'month' => $month,
                 'month_name' => Carbon::createFromFormat('Y-m', $month)->translatedFormat('F Y'),
                 'total_orders' => $group->count(),
-                'dpp' => (float)$group->sum('bruto'),
-                'pph22' => (float)$group->sum('tax_pph22'),
-                'ppn' => (float)$group->sum('tax_ppn'),
-                'total_tax' => (float)$group->sum('tax_pph22') + (float)$group->sum('tax_ppn'),
+                'dpp' => (float) $group->sum('bruto'),
+                'pph22' => (float) $group->sum('tax_pph22'),
+                'ppn' => (float) $group->sum('tax_ppn'),
+                'total_tax' => (float) $group->sum('tax_pph22') + (float) $group->sum('tax_ppn'),
             ];
         }
 
@@ -256,10 +257,10 @@ class AccountingReportService
     {
         $ordersQuery = Order::with(['customer', 'transaction', 'disbursement']);
 
-        if (!empty($filters['start_date'])) {
+        if (! empty($filters['start_date'])) {
             $ordersQuery->whereDate('order_date', '>=', $filters['start_date']);
         }
-        if (!empty($filters['end_date'])) {
+        if (! empty($filters['end_date'])) {
             $ordersQuery->whereDate('order_date', '<=', $filters['end_date']);
         }
 
@@ -274,12 +275,12 @@ class AccountingReportService
             $tx = $order->transaction;
             $disb = $order->disbursement;
 
-            $bruto = (float)$order->total_bruto;
-            $pph = $tx ? (float)$tx->tax_pph22 : 0;
-            $ppn = $tx ? (float)$tx->tax_ppn : 0;
-            $fees = $tx ? ((float)$tx->admin_fee + (float)$tx->va_fee) : 0;
-            $expectedNet = $tx ? (float)$tx->net_disbursement : ($bruto - ($pph + $ppn + $fees));
-            $actualAmount = $disb ? (float)$disb->amount : 0;
+            $bruto = (float) $order->total_bruto;
+            $pph = $tx ? (float) $tx->tax_pph22 : 0;
+            $ppn = $tx ? (float) $tx->tax_ppn : 0;
+            $fees = $tx ? ((float) $tx->admin_fee + (float) $tx->va_fee) : 0;
+            $expectedNet = $tx ? (float) $tx->net_disbursement : ($bruto - ($pph + $ppn + $fees));
+            $actualAmount = $disb ? (float) $disb->amount : 0;
 
             $diff = round($actualAmount - $expectedNet, 2);
 
@@ -329,15 +330,15 @@ class AccountingReportService
      */
     public function exportExcel(string $type, array $data): string
     {
-        $spreadsheet = new Spreadsheet();
+        $spreadsheet = new Spreadsheet;
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle(substr(strtoupper($type), 0, 30));
 
         // Company Header
         $sheet->setCellValue('A1', 'CV TIHANI MAFAZA - BANDUNG');
         $sheet->setCellValue('A2', 'SISTEM INFORMASI AKUNTANSI TERINTEGRASI SIPLAH');
-        $sheet->setCellValue('A3', 'LAPORAN: ' . strtoupper(str_replace('_', ' ', $type)));
-        $sheet->setCellValue('A4', 'Tanggal Cetak: ' . Carbon::now()->format('d/m/Y H:i'));
+        $sheet->setCellValue('A3', 'LAPORAN: '.strtoupper(str_replace('_', ' ', $type)));
+        $sheet->setCellValue('A4', 'Tanggal Cetak: '.Carbon::now()->format('d/m/Y H:i'));
 
         $sheet->getStyle('A1:A3')->getFont()->setBold(true);
         $sheet->getStyle('A1')->getFont()->setSize(14);
@@ -359,7 +360,7 @@ class AccountingReportService
                     $order->total_bruto,
                     $order->total_cost,
                     $order->gross_profit,
-                    $order->margin_percentage . '%',
+                    $order->margin_percentage.'%',
                     ucfirst($order->status),
                 ], null, "A{$rowIdx}");
                 $rowIdx++;
@@ -413,7 +414,7 @@ class AccountingReportService
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        $tempPath = storage_path('app/temp_export_' . uniqid() . '.xlsx');
+        $tempPath = storage_path('app/temp_export_'.uniqid().'.xlsx');
         $writer = new Xlsx($spreadsheet);
         $writer->save($tempPath);
 

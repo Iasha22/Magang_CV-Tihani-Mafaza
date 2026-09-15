@@ -8,7 +8,6 @@ use App\Models\OrderItem;
 use App\Models\PaymentDisbursement;
 use App\Models\Transaction;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -18,17 +17,17 @@ class DashboardController extends Controller
     {
         $totalOrders = Order::count();
         $completedOrders = Order::where('status', 'selesai')->count();
-        $totalBruto = (float)Order::sum('total_bruto');
-        $totalCost = (float)Order::sum('total_cost');
-        $grossProfit = (float)Order::sum('gross_profit');
+        $totalBruto = (float) Order::sum('total_bruto');
+        $totalCost = (float) Order::sum('total_cost');
+        $grossProfit = (float) Order::sum('gross_profit');
         $marginPercentage = $totalBruto > 0 ? round(($grossProfit / $totalBruto) * 100, 2) : 0;
 
-        $totalDisbursed = (float)PaymentDisbursement::where('status', 'cair')->sum('amount');
-        $totalPendingDisbursement = (float)Order::whereIn('status', ['diproses', 'menunggu_pencairan'])
+        $totalDisbursed = (float) PaymentDisbursement::where('status', 'cair')->sum('amount');
+        $totalPendingDisbursement = (float) Order::whereIn('status', ['diproses', 'menunggu_pencairan'])
             ->sum('total_bruto');
 
-        $totalPph22 = (float)Transaction::sum('tax_pph22');
-        $totalPpn = (float)Transaction::sum('tax_ppn');
+        $totalPph22 = (float) Transaction::sum('tax_pph22');
+        $totalPpn = (float) Transaction::sum('tax_ppn');
 
         // Monthly trends for current year
         $monthlyTrends = [];
@@ -36,15 +35,15 @@ class DashboardController extends Controller
             $monthDate = Carbon::create(Carbon::now()->year, $m, 1);
             $monthName = $monthDate->translatedFormat('M');
 
-            $mBruto = (float)Order::whereYear('order_date', $monthDate->year)
+            $mBruto = (float) Order::whereYear('order_date', $monthDate->year)
                 ->whereMonth('order_date', $m)
                 ->sum('total_bruto');
 
-            $mCost = (float)Order::whereYear('order_date', $monthDate->year)
+            $mCost = (float) Order::whereYear('order_date', $monthDate->year)
                 ->whereMonth('order_date', $m)
                 ->sum('total_cost');
 
-            $mProfit = (float)Order::whereYear('order_date', $monthDate->year)
+            $mProfit = (float) Order::whereYear('order_date', $monthDate->year)
                 ->whereMonth('order_date', $m)
                 ->sum('gross_profit');
 
@@ -68,7 +67,7 @@ class DashboardController extends Controller
                     'name' => $cust->name,
                     'npsn' => $cust->npsn,
                     'orders_count' => $cust->orders_count,
-                    'total_revenue' => (float)($cust->orders_sum_total_bruto ?? 0),
+                    'total_revenue' => (float) ($cust->orders_sum_total_bruto ?? 0),
                 ];
             });
 
@@ -79,8 +78,8 @@ class DashboardController extends Controller
             ->map(function ($item) {
                 return [
                     'category' => $item->category,
-                    'amount' => (float)$item->total_amount,
-                    'count' => (int)$item->items_count,
+                    'amount' => (float) $item->total_amount,
+                    'count' => (int) $item->items_count,
                 ];
             });
 

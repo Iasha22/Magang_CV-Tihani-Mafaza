@@ -2,9 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Customer;
-use App\Models\Order;
-use App\Models\User;
 use App\Services\SiplahParserService;
 use App\Services\TaxCalculationService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -56,7 +53,7 @@ class SiplahAccountingTest extends TestCase
 
     public function test_siplah_parser_service_on_sample_file(): void
     {
-        $taxService = new TaxCalculationService();
+        $taxService = new TaxCalculationService;
         $parser = new SiplahParserService($taxService);
         $filePath = base_path('sample_data/template_siplah_cv_tihani.xlsx');
 

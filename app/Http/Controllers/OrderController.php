@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\PaymentDisbursement;
-use App\Models\Transaction;
 use App\Services\TaxCalculationService;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -26,7 +24,7 @@ class OrderController extends Controller
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
                 $q->where('siplah_order_id', 'like', "%{$search}%")
-                  ->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$search}%"));
+                    ->orWhereHas('customer', fn ($c) => $c->where('name', 'like', "%{$search}%"));
             });
         }
 
@@ -64,7 +62,7 @@ class OrderController extends Controller
                 'disbursement_date' => $validated['disbursement_date'],
                 'amount' => $validated['amount'],
                 'bank_name' => $validated['bank_name'] ?? 'BJB',
-                'reference_number' => $validated['reference_number'] ?? 'CAIR-' . $order->siplah_order_id,
+                'reference_number' => $validated['reference_number'] ?? 'CAIR-'.$order->siplah_order_id,
                 'status' => 'cair',
                 'notes' => $validated['notes'],
             ]

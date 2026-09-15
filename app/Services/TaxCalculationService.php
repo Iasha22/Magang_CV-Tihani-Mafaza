@@ -27,10 +27,9 @@ class TaxCalculationService
     /**
      * Hitung PPh Pasal 22
      *
-     * @param float $bruto Nilai transaksi bruto (sebelum PPN)
-     * @param bool $hasNpwp Apakah rekanan memiliki NPWP
-     * @param bool $forceThreshold Apakah memeriksa batas threshold Rp 2.000.000
-     * @return float
+     * @param  float  $bruto  Nilai transaksi bruto (sebelum PPN)
+     * @param  bool  $hasNpwp  Apakah rekanan memiliki NPWP
+     * @param  bool  $forceThreshold  Apakah memeriksa batas threshold Rp 2.000.000
      */
     public function calculatePPh22(float $bruto, bool $hasNpwp = true, bool $forceThreshold = true): float
     {
@@ -39,15 +38,15 @@ class TaxCalculationService
         }
 
         $rate = $hasNpwp ? self::PPH22_RATE_WITH_NPWP : self::PPH22_RATE_WITHOUT_NPWP;
+
         return round($bruto * $rate, 2);
     }
 
     /**
      * Hitung PPN
      *
-     * @param float $bruto Nilai transaksi bruto
-     * @param float $rate Tarif PPN (default 11%)
-     * @return float
+     * @param  float  $bruto  Nilai transaksi bruto
+     * @param  float  $rate  Tarif PPN (default 11%)
      */
     public function calculatePPN(float $bruto, float $rate = self::PPN_RATE): float
     {
@@ -57,13 +56,6 @@ class TaxCalculationService
     /**
      * Hitung Nilai Bersih Pencairan Dana ke Rekening CV (Net Disbursement)
      * Net = Bruto - (PPh 22 + PPN + Biaya Admin + Biaya VA)
-     *
-     * @param float $bruto
-     * @param float $pph22
-     * @param float $ppn
-     * @param float $adminFee
-     * @param float $vaFee
-     * @return float
      */
     public function calculateNetDisbursement(
         float $bruto,
@@ -73,16 +65,13 @@ class TaxCalculationService
         float $vaFee = 0.0
     ): float {
         $net = $bruto - ($pph22 + $ppn + $adminFee + $vaFee);
+
         return round(max(0, $net), 2);
     }
 
     /**
      * Hitung Laba Kotor (Gross Profit)
      * Laba Kotor = Nilai Bruto - Belanja Modal (HPP)
-     *
-     * @param float $bruto
-     * @param float $belanjaModal
-     * @return float
      */
     public function calculateGrossProfit(float $bruto, float $belanjaModal): float
     {
@@ -92,10 +81,6 @@ class TaxCalculationService
     /**
      * Hitung Persentase Margin Laba Kotor (%)
      * Margin % = (Laba Kotor / Bruto) * 100
-     *
-     * @param float $grossProfit
-     * @param float $bruto
-     * @return float
      */
     public function calculateMarginPercentage(float $grossProfit, float $bruto): float
     {

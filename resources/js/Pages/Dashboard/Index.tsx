@@ -202,8 +202,8 @@ export default function Dashboard({
             title="Dashboard Overview"
             subtitle="Ringkasan Kinerja Keuangan & Transaksi SIPLah CV Tihani Mafaza"
         >
-            {/* Primary KPI Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {/* Primary KPI Grid - FIXED: lg:grid-cols-3 xl:grid-cols-4 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 <KpiCard
                     title="Total Pendapatan Bruto"
                     value={formatRp(metrics.totalRevenue)}
@@ -407,10 +407,10 @@ export default function Dashboard({
                                         <td className="py-3 text-center">
                                             <span
                                                 className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold ${order.status === 'selesai'
-                                                        ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
-                                                        : order.status === 'menunggu_pencairan'
-                                                            ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
-                                                            : 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
+                                                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30'
+                                                    : order.status === 'menunggu_pencairan'
+                                                        ? 'bg-amber-500/15 text-amber-300 border border-amber-500/30'
+                                                        : 'bg-indigo-500/15 text-indigo-300 border border-indigo-500/30'
                                                     }`}
                                             >
                                                 {order.status === 'selesai'
